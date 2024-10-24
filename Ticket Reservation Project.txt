@@ -1,0 +1,160 @@
+package week3;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Ticket {
+    private static int idCounter = 1;
+    private int ticketId;
+    private String customerName;
+    private int age;
+    private int seatNumber;
+
+    Ticket(String name, int age, int seatNumber) {
+        this.ticketId = idCounter++;
+        this.customerName = name;
+        this.age = age;
+        this.seatNumber = seatNumber;
+    }
+
+    public int getTicketId() {
+        return ticketId;
+    }
+
+    public int getSeatNumber() {
+        return seatNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "Ticket ID: A00" + ticketId + ", Name: " + customerName + ", Age: " + age + 
+               ", Seat Number: " + seatNumber;
+    }
+}
+
+class TheatreReservation {
+    private ArrayList<Ticket> tickets = new ArrayList<>();
+    private int[] seats = new int[30];  
+    Scanner sa = new Scanner(System.in);
+
+    public TheatreReservation() {
+        for (int i = 0; i < 30; i++) {
+            seats[i] = i + 1;	
+        }
+    }
+
+    public void displaySeats() {
+        System.out.println("\nCurrent Seat Status:");
+        for (int i = 0; i < seats.length; i++) {
+            if (seats[i] == 0) {
+                System.out.print("F  ");  
+            } else {
+                System.out.print(seats[i] + "  ");  
+            }
+            if ((i + 1) % 10 == 0) {
+                System.out.println();
+            }
+        }
+    }
+
+    public void bookTicket() {
+        displaySeats();  
+        System.out.println("Enter the Name:");
+        String name = sa.nextLine();
+        System.out.println("Enter the Age:");
+        int age = sa.nextInt();
+        sa.nextLine(); 
+        System.out.println("Enter the Seat Number to Book:");
+        int seatNumber = sa.nextInt();
+        sa.nextLine();  
+        if (seatNumber < 1 || seatNumber > 30 || seats[seatNumber - 1] == 0) {
+            System.out.println("Invalid seat number or seat already booked. Try again.");
+            return;
+        }
+
+        seats[seatNumber - 1] = 0;
+        Ticket ticket = new Ticket(name, age, seatNumber);
+        tickets.add(ticket);
+        System.out.println("Ticket successfully booked! Ticket ID A00" + ticket.getTicketId());
+    }
+
+    public void bookMultipleTickets() {
+        System.out.println("Enter the number of seats to book:");
+        int numberOfSeats = sa.nextInt();
+        sa.nextLine(); 
+
+        for (int i = 0; i < numberOfSeats; i++) {
+            bookTicket();
+        }
+    }
+
+    public void viewTickets() {
+        if (tickets.isEmpty()) {
+            System.out.println("No tickets booked yet.");
+            return;
+        }
+        for (Ticket ticket : tickets) {
+            System.out.println(ticket);
+        }
+    }
+
+    public void cancelTicket() {
+        System.out.println("Enter the Ticket ID A00:");
+        int ticketId = sa.nextInt();
+        sa.nextLine(); 
+
+        boolean found = false;
+        for (Ticket ticket : tickets) {
+            if (ticket.getTicketId() == ticketId) {
+                seats[ticket.getSeatNumber() - 1] = ticket.getSeatNumber();
+                tickets.remove(ticket);
+                System.out.println("Cancellation successful!");
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            System.out.println("ID not found!");
+        }
+    }
+
+    public void showMenu() {
+        while (true) {
+            System.out.println("\n--- Theatre Reservation System ---");
+            System.out.println("1. Book Ticket");
+            System.out.println("2. Book Multiple Tickets");
+            System.out.println("3. View Tickets");
+            System.out.println("4. Cancel Ticket");
+            System.out.println("5. Exit");
+            int choice = sa.nextInt();
+            sa.nextLine();  
+
+            switch (choice) {
+                case 1:
+                    bookTicket();
+                    break;
+                case 2:
+                    bookMultipleTickets();
+                    break;
+                case 3:
+                    viewTickets();
+                    break;
+                case 4:
+                    cancelTicket();
+                    break;
+                case 5:
+                    System.out.println("Exit Successfully.");
+                    return;
+                default:
+                    System.out.println("Invalid choice. Try again.");
+            }
+        }
+    }
+}
+
+public class theatrebooking {
+    public static void main(String[] args) {
+        TheatreReservation tr = new TheatreReservation();
+        tr.showMenu();
+    }
+}
